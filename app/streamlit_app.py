@@ -6,6 +6,7 @@ import tempfile
 import requests
 from datetime import datetime
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 
@@ -349,7 +350,6 @@ def analisar_arquivos(arquivos):
     df_final.insert(0, "Arquivo", df_struct["Arquivo"])
     df_final.insert(1, "Dia", df_struct["Arquivo"].apply(extrair_dia))
 
-    df_final = pos_processar(df_final, textos, primeiro_dia)
     df_final = df_final.sort_values(by="Dia")
 
     df_final.to_csv(f_tab, index=False, sep=";", encoding="utf-8-sig")
@@ -436,27 +436,67 @@ if "df_final" in st.session_state:
                     ultimo_dia = int(df_peso["Dia"].max())
                     dia_previsto = ultimo_dia + int(dias_a_prever)
 
-                    ultimo_peso = float(df_peso["Peso (g)"].iloc[-1])
+                    # Escala Y: margem de 50g em volta dos valores conhecidos e da previsão
+                    todos_pesos = list(df_peso["Peso (g)"]) + [previsao_min, previsao_max]
+                    y_min = max(0, min(todos_pesos) - 50)
+                    y_max = max(todos_pesos) + 50
 
-                    df_intervalo = pd.DataFrame({
-                        "Dia": list(df_peso["Dia"]) + [dia_previsto],
-                        "Peso real": list(df_peso["Peso (g)"]) + [None],
-                        "Limite inferior": list(df_peso["Peso (g)"]) + [previsao_min],
-                        "Limite superior": list(df_peso["Peso (g)"]) + [previsao_max],
-                    })
+                    # Dados reais
+                    df_real = df_peso.copy()
 
-                    df_intervalo = df_intervalo.sort_values(by="Dia")
+                    # Ponto central da previsão (média do intervalo)
+                    df_prev_ponto = pd.DataFrame([{
+                        "Dia": dia_previsto,
+                        "Peso (g)": (previsao_min + previsao_max) / 2,
+                    }])
 
-                    st.subheader("Gráfico Peso + Intervalo de Previsão do LLM")
-
-                    st.write(
-                        f"Intervalo previsto: {previsao_min} g até {previsao_max} g para o dia {dia_previsto}"
+                    # Linha dos dados reais (azul)
+                    linha = alt.Chart(df_real).mark_line(color="#1f77b4").encode(
+                        x=alt.X("Dia:Q", title="Dia de vida"),
+                        y=alt.Y("Peso (g):Q",
+                                scale=alt.Scale(domain=[y_min, y_max]),
+                                title="Peso (g)")
                     )
 
-                    st.line_chart(
-                        df_intervalo,
-                        x="Dia",
-                        y=["Peso real", "Limite inferior", "Limite superior"]
+                    pontos_reais = alt.Chart(df_real).mark_circle(size=60, color="#1f77b4").encode(
+                        x="Dia:Q",
+                        y="Peso (g):Q",
+                        tooltip=["Dia", "Peso (g)"]
+                    )
+
+                    # Barra de erro (intervalo de previsão) — laranja
+                    df_intervalo_alt = pd.DataFrame([{
+                        "Dia": dia_previsto,
+                        "ymin": float(previsao_min),
+                        "ymax": float(previsao_max)
+                    }])
+
+                    barra_erro = alt.Chart(df_intervalo_alt).mark_errorbar(
+                        color="#ff7f0e", thickness=2, ticks=True
+                    ).encode(
+                        x="Dia:Q",
+                        y=alt.Y("ymin:Q", scale=alt.Scale(domain=[y_min, y_max])),
+                        y2="ymax:Q"
+                    )
+
+                    ponto_prev = alt.Chart(df_prev_ponto).mark_circle(
+                        size=120, color="#ff7f0e"
+                    ).encode(
+                        x="Dia:Q",
+                        y="Peso (g):Q",
+                        tooltip=["Dia", "Peso (g)"]
+                    )
+
+                    grafico = (linha + pontos_reais + barra_erro + ponto_prev).properties(
+                        title=f"Peso real (azul) + Intervalo previsto para o dia {dia_previsto} (laranja)",
+                        width=700,
+                        height=400
+                    )
+
+                    st.subheader("Gráfico Peso + Intervalo de Previsão do LLM")
+                    st.altair_chart(grafico, use_container_width=True)
+                    st.write(
+                        f"Intervalo previsto: {previsao_min} g até {previsao_max} g para o dia {dia_previsto}"
                     )
 
                 else:
