@@ -1,0 +1,37 @@
+Abaixo está um relatório clínico de um recém-nascido.
+Dia identificado: D{dia}
+
+Por favor, leia cuidadosamente o texto e extraia as seguintes informações clínicas, se estiverem disponíveis:
+
+1. Peso (g)
+2. Comprimento (cm)
+3. PC (cm)
+4. Fluidos totais (ml/kg/dia)
+5. NP (ml/kg/dia)
+6. NE (ml/kg/dia)
+7. Energia (kcal/kg/dia)
+8. Proteína (g/kg/dia)
+9. Lípidos (g/kg/dia)
+
+Regras para o peso:
+- PN significa peso ao nascimento.
+- No primeiro diário da série, o PN pode ser usado como Peso (g), porque corresponde ao peso inicial.
+- Nos restantes dias, NUNCA uses PN como Peso (g).
+- Usa apenas "Peso atual", "PA", "Peso hoje" ou equivalente.
+- Não uses "Peso ontem" como peso atual.
+- Se não existir peso atual válido, escreve "Peso: Não informado".
+
+Responde apenas neste formato:
+
+Peso: ___ g
+Comprimento: ___ cm
+PC: ___ cm
+Fluidos totais: ___ ml/kg/dia
+NP: ___ ml/kg/dia
+NE: ___ ml/kg/dia
+Energia: ___ kcal/kg/dia
+Proteína: ___ g/kg/dia
+Lípidos: ___ g/kg/dia
+
+Relatório:
+{texto}
