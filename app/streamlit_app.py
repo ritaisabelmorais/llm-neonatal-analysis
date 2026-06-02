@@ -408,7 +408,20 @@ if "df_final" in st.session_state:
         st.warning("Não existem valores de peso suficientes para construir o gráfico.")
 
     else:
-        st.line_chart(df_peso, x="Dia", y="Peso (g)")
+        dias_unicos = sorted(df_peso["Dia"].unique().tolist())
+
+        grafico_serie = alt.Chart(df_peso).mark_line(point=True, color="#1f77b4").encode(
+            x=alt.X("Dia:Q",
+                    title="Dia de vida",
+                    axis=alt.Axis(values=dias_unicos, format="d", labelAngle=0)),
+            y=alt.Y("Peso (g):Q", title="Peso (g)"),
+            tooltip=["Dia", "Peso (g)"]
+        ).properties(
+            title="Evolução do Peso",
+            width=700,
+            height=400
+        )
+        st.altair_chart(grafico_serie, use_container_width=True)
 
         st.subheader("Previsão do peso por intervalo")
 
@@ -450,16 +463,22 @@ if "df_final" in st.session_state:
                         "Peso (g)": (previsao_min + previsao_max) / 2,
                     }])
 
+                    # Dias a mostrar no eixo X (reais + dia previsto)
+                    dias_eixo = sorted(set(df_real["Dia"].tolist() + [dia_previsto]))
+
                     # Linha dos dados reais (azul)
                     linha = alt.Chart(df_real).mark_line(color="#1f77b4").encode(
-                        x=alt.X("Dia:Q", title="Dia de vida"),
+                        x=alt.X("Dia:Q",
+                                title="Dia de vida",
+                                axis=alt.Axis(values=dias_eixo, format="d", labelAngle=0)),
                         y=alt.Y("Peso (g):Q",
                                 scale=alt.Scale(domain=[y_min, y_max]),
                                 title="Peso (g)")
                     )
 
                     pontos_reais = alt.Chart(df_real).mark_circle(size=60, color="#1f77b4").encode(
-                        x="Dia:Q",
+                        x=alt.X("Dia:Q",
+                                axis=alt.Axis(values=dias_eixo, format="d", labelAngle=0)),
                         y="Peso (g):Q",
                         tooltip=["Dia", "Peso (g)"]
                     )
@@ -474,7 +493,8 @@ if "df_final" in st.session_state:
                     barra_erro = alt.Chart(df_intervalo_alt).mark_errorbar(
                         color="#ff7f0e", thickness=2, ticks=True
                     ).encode(
-                        x="Dia:Q",
+                        x=alt.X("Dia:Q",
+                                axis=alt.Axis(values=dias_eixo, format="d", labelAngle=0)),
                         y=alt.Y("ymin:Q", scale=alt.Scale(domain=[y_min, y_max])),
                         y2="ymax:Q"
                     )
@@ -482,7 +502,8 @@ if "df_final" in st.session_state:
                     ponto_prev = alt.Chart(df_prev_ponto).mark_circle(
                         size=120, color="#ff7f0e"
                     ).encode(
-                        x="Dia:Q",
+                        x=alt.X("Dia:Q",
+                                axis=alt.Axis(values=dias_eixo, format="d", labelAngle=0)),
                         y="Peso (g):Q",
                         tooltip=["Dia", "Peso (g)"]
                     )
