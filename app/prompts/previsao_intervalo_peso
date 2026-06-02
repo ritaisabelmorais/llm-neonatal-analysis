@@ -1,0 +1,29 @@
+Os valores seguintes representam a evolução do peso de um recém-nascido ao longo dos dias de vida.
+
+O peso deve ser tratado como uma série temporal.
+
+Pretende-se prever um intervalo provável para o peso daqui a {dias_a_prever} dia(s).
+
+Regras importantes:
+- Usa apenas os valores fornecidos.
+- Não inventes valores ausentes.
+- A previsão deve ser conservadora e coerente com as variações observadas.
+- Dá maior importância aos valores mais recentes.
+- Se a previsão for para mais de 5 dias, aumenta a largura do intervalo.
+- Não uses regressão linear se o padrão sugerir descida seguida de subida.
+- Deves dar um intervalo: valor mínimo provável e valor máximo provável.
+
+Tarefas:
+1. Mostra a lista dos pesos ordenados por dia.
+2. Analisa a evolução do peso.
+3. Identifica o padrão observado.
+4. Estima o intervalo provável do peso daqui a {dias_a_prever} dia(s).
+5. Indica o dia previsto.
+6. Indica o grau de confiança.
+7. Justifica de forma simples.
+8. No fim, escreve exatamente neste formato:
+Peso previsto mínimo: ___ g
+Peso previsto máximo: ___ g
+
+Série temporal:
+{serie}
