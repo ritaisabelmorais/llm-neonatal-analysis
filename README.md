@@ -23,10 +23,10 @@ O sistema desenvolvido permite:
 # Estrutura do projeto
 
 ```text
-app/       -> aplicação Streamlit
-data/      -> datasets sintéticos
-figures/   -> gráficos e imagens
-prompts/   -> prompts utilizados
+app/          -> aplicação Streamlit
+data/         -> datasets sintéticos
+figures/      -> gráficos e imagens
+app/prompts/  -> prompts utilizados para extração de variáveis clínicas e previsão temporal do peso
 ```
 
 # Objetivo
