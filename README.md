@@ -48,6 +48,13 @@ Explorar a utilização de Large Language Models (LLMs) na análise longitudinal
 
 ## Como executar
 
+Antes de executar a aplicação, é necessário instalar o LM Studio, disponível no site oficial:
+
+https://lmstudio.ai/
+
+No LM Studio deve ser carregado um modelo local compatível, neste caso o Gemma 3 12B IT, e iniciado o servidor local da API.
+
+
 Instalar dependências:
 
 ```bash
